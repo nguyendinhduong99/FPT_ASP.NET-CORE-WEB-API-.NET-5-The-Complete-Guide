@@ -15,7 +15,7 @@ namespace my_book.Data.Services
             _context = context;
         }
 
-        public void AddBook(BookVM book)
+        public void AddBookWithAuthor(BookVM book)
         {
             var _book = new Models.Book()
             {
@@ -25,16 +25,43 @@ namespace my_book.Data.Services
                 DateRead = book.IsRead ? book.DateRead : null,
                 Rate = book.IsRead ? book.Rate : null,
                 Genre = book.Genre,
-                Author = book.Author,
                 CoverUrl = book.CoverUrl,
-                DateAdded = DateTime.Now
+                DateAdded = DateTime.Now,
+                PublisherId= book.PublisherId
             };
             _context.Books.Add(_book);
             _context.SaveChanges();
+
+            foreach (var id in book.AuthorIds)
+            {
+                var _book_author = new Book_Author()
+                {
+                    BookId = _book.Id,
+                    AuthorId = id
+                };
+                _context.Book_Authors.Add(_book_author);
+                _context.SaveChanges();
+            }
         }
 
         public List<Book> GetAllBooks() => _context.Books.ToList();
-        public Book GetBookById(int bookId) => _context.Books.FirstOrDefault(n=> n.Id == bookId);
+        public BookWithAuthorsVM GetBookById(int bookId)
+        {
+            var _bookWithAuthorVm = _context.Books.Where(n => n.Id == bookId).Select(book => new BookWithAuthorsVM()
+            {
+
+                Title = book.Title,
+                Description = book.Description,
+                IsRead = book.IsRead,
+                DateRead = book.IsRead ? book.DateRead : null,
+                Rate = book.IsRead ? book.Rate : null,
+                Genre = book.Genre,
+                CoverUrl = book.CoverUrl,
+                PublisherName = book.Publisher.Name,
+                AuthorName = book.Book_Authors.Select(n => n.Author.FullName).ToList()
+            }).FirstOrDefault();
+            return _bookWithAuthorVm;
+        }
         public Book UpdateBookById(int bookId, BookVM book)
         {
             var _bookId = _context.Books.FirstOrDefault(n => n.Id == bookId);
@@ -46,7 +73,6 @@ namespace my_book.Data.Services
                 _bookId.DateRead = book.IsRead ? book.DateRead : null;
                 _bookId.Rate = book.IsRead ? book.Rate : null;
                 _bookId.Genre = book.Genre;
-                _bookId.Author = book.Author;
                 _bookId.CoverUrl = book.CoverUrl;
 
                 _context.SaveChanges();
@@ -61,6 +87,10 @@ namespace my_book.Data.Services
             {
                 _context.Remove(_bookId);
                 _context.SaveChanges();
+            }
+            else
+            {
+                throw new Exception($"Not found id: {bookId} of the book");
             }
         }
     }

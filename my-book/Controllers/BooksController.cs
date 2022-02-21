@@ -30,14 +30,29 @@ namespace my_book.Controllers
         public IActionResult GetBookById(int id)
         {
             var book = _booksService.GetBookById(id);
-            return Ok(book);
+            if (book != null)
+            {
+                return Ok(book);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
-        [HttpPost("add-book")]
+        [HttpPost("add-book-with-author")]
         public IActionResult AddBook([FromBody] BookVM book)
         {
-            _booksService.AddBook(book);
-            return Ok();
+            try
+            {
+                _booksService.AddBookWithAuthor(book);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("update-book-by-id/{id}")]
@@ -50,8 +65,16 @@ namespace my_book.Controllers
         [HttpDelete("delete-book-by-id/{id}")]
         public IActionResult DeleteBookById(int id)
         {
-            _booksService.DeleteBookById(id);
-            return Ok();
+            try
+            {
+                _booksService.DeleteBookById(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

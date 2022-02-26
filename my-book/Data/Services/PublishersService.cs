@@ -52,7 +52,7 @@ namespace my_book.Data.Services
             }
 
             //Paging
-            int pageSize = 55;
+            int pageSize = 5;
             allPublishers = PaginatedList<Publisher>.Create(allPublishers.AsQueryable(), pageNumber ?? 1, pageSize);
             return allPublishers;
         }

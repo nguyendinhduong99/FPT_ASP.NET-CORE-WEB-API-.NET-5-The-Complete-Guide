@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,6 +43,18 @@ namespace my_book
             services.AddTransient<BooksService>();
             services.AddTransient<PublishersService>();
             services.AddTransient<AuthorsService>();
+            services.AddTransient<LogsService>();
+
+            //Config API Version
+            services.AddApiVersioning(config =>
+            {
+                config.DefaultApiVersion = new ApiVersion(1, 0);
+                config.AssumeDefaultVersionWhenUnspecified = true; //cho giả định khi version ko xác định
+
+                //config.ApiVersionReader = new HeaderApiVersionReader("custom-version-header"); 
+                //config.ApiVersionReader = new MediaTypeApiVersionReader();
+            });
+
 
             services.AddSwaggerGen(c =>
             {
@@ -50,7 +63,7 @@ namespace my_book
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -67,7 +80,8 @@ namespace my_book
 
             //Exception Handling
             //app.ConfigureBuildInExceptionHandler();
-            app.CustomConfigureBuildInExceptionHandler();
+            //app.CustomConfigureBuildInExceptionHandler();
+            app.ConfigureBuildInExceptionHandler(loggerFactory);
 
             app.UseEndpoints(endpoints =>
             {

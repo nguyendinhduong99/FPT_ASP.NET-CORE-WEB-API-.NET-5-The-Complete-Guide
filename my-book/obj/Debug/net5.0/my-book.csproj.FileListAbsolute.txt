@@ -72,4 +72,3 @@ C:\Users\nguye\Desktop\FPT_EnrickSkills\ASP.NET CORE WEB API (.NET 5)  The Compl
 C:\Users\nguye\Desktop\FPT_EnrickSkills\ASP.NET CORE WEB API (.NET 5)  The Complete Guide\my-book\my-book\bin\Debug\net5.0\Serilog.Sinks.MSSqlServer.dll
 C:\Users\nguye\Desktop\FPT_EnrickSkills\ASP.NET CORE WEB API (.NET 5)  The Complete Guide\my-book\my-book\bin\Debug\net5.0\Serilog.Sinks.PeriodicBatching.dll
 C:\Users\nguye\Desktop\FPT_EnrickSkills\ASP.NET CORE WEB API (.NET 5)  The Complete Guide\my-book\my-book\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.InMemory.dll
-C:\Users\nguye\Desktop\FPT_EnrickSkills\ASP.NET CORE WEB API (.NET 5)  The Complete Guide\my-book\my-book\obj\Debug\net5.0\my-book.csproj.AssemblyReference.cache

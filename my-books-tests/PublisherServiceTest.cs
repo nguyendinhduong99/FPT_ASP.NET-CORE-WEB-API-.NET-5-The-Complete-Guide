@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using my_book.Data;
 using my_book.Data.Models;
 using my_book.Data.Services;
+using my_book.Data.ViewModels;
+using my_book.Exceptions;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -68,6 +70,68 @@ namespace my_books_tests
             var result = publishersService.GetPublisherById(99);
             Assert.That(result, Is.Null);
         }
+
+        //AddPublisher
+        [Test, Order(7)]
+        public void AddPublisher_WithException_Test()
+        {
+            var newPublisher = new PublisherVM()
+            {
+                Name = "123 Exception"
+            };
+
+            Assert.That(() => publishersService.AddPublisher(newPublisher), Throws.Exception.TypeOf<PublisherNameException>()
+                .With.Message.EqualTo("Name start with number"));
+        }
+        [Test, Order(8)]
+        public void AddPublisher_WithoutException_Test()
+        {
+            var newPublisher = new PublisherVM()
+            {
+                Name = "Exception 123"
+            };
+
+            var result = publishersService.AddPublisher(newPublisher);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Id, Is.Not.Null);
+            Assert.That(result.Name, Does.StartWith("Exception"));
+        }
+
+        //GetPublisherWithBookAndAuthors
+        [Test, Order(9)]
+        public void GetPublisherWithBookAndAuthors_Test()
+        {
+            var result = publishersService.GetPublisherWithBookAndAuthors(1);
+
+            Assert.That(result.Name, Is.EqualTo("Publisher 1"));
+            Assert.That(result.BookAuthors, Is.Not.Empty);
+            Assert.That(result.BookAuthors.Count, Is.GreaterThan(0));
+
+            var firstBookName = result.BookAuthors.OrderBy(n => n.BookName).FirstOrDefault().BookName;
+            Assert.That(firstBookName, Is.EqualTo("Book 1"));
+        }
+
+        [Test, Order(10)]
+        public void DeletePublisherById_With_Test()
+        {
+            int publisherId = 6;
+            //delete by id
+            publishersService.DeletePublisherById(publisherId);
+
+            //get by id
+            var result = publishersService.GetPublisherById(publisherId);
+            Assert.That(result, Is.Null);
+        }
+        [Test, Order(11)]
+        public void DeletePublisherById_Without_Test()
+        {
+            int publisherId = 6;
+            //delete by id
+            // delete fail
+            Assert.That(() => publishersService.DeletePublisherById(publisherId),
+                Throws.Exception.TypeOf<Exception>().With.Message.EqualTo($"Not found id {publisherId} of publisher"));
+        }
+
         [OneTimeTearDown]
         public void CleanUp()
         {
